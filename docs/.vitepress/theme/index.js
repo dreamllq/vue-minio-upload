@@ -20,25 +20,10 @@ export default {
     app.component('Demo', Demo)
 
     setConfig({
-      endPoint:'file.dev.alsi.cn',
-      accessKey:'developer',
-      secretKey:'developer@ASDL-APS',
-      bucket:'dev',
+      endPoint:'xxx',
+      accessKey:'xxx',
+      secretKey:'xxx',
+      bucket:'xxx',
     })
-
-    setConfig({
-      endPoint:'file.uat.alsi.cn',
-      accessKey:'developer',
-      secretKey:'developer@ASDL-APS',
-      bucket:'uat',
-    })
-
-    // setConfig({
-    //   endPoint:'file.sit.alsi.cn',
-    //   accessKey:'minio',
-    //   // secretKey:'5mrE2KHRDzm6DMQL',
-    //   secretKey:'37BgWp!0$byVbMl&',
-    //   bucket:'test',
-    // })
   }
 };
