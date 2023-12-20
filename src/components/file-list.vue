@@ -1,6 +1,6 @@
 <template>
-  <div>
-    hello-world
+  <div class='minio-file-list'>
+    <slot />
   </div>
 </template>
 
@@ -9,7 +9,7 @@
 </script>
 
 <style scoped lang="scss">
-.a {
-  margin-top: 0%;
+.minio-file-list {
+  margin-top: 8px;
 }
 </style>

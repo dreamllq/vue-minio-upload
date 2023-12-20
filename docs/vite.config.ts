@@ -2,10 +2,11 @@ import { defineConfig } from 'vite';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import * as path from 'path';
 import pkg from '../package.json';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
 
 // https://vitejs.dev/config/
 export default defineConfig({
-  plugins: [vueJsx()],
+  plugins: [vueJsx(), nodePolyfills()],
   resolve: {
     alias: {
       '@': path.resolve(__dirname, '../src'),

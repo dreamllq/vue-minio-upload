@@ -6,6 +6,7 @@ import './custom.scss';
 import NotFound from './not-found.vue'
 import DefaultTheme from 'vitepress/theme'
 import Demo from '../../global/demo/demo.vue'
+import { setConfig } from 'lc-vue-minio-upload'
 
 export default {
   ...DefaultTheme,
@@ -17,5 +18,27 @@ export default {
       app.component(key, component)
     }
     app.component('Demo', Demo)
+
+    setConfig({
+      endPoint:'file.dev.alsi.cn',
+      accessKey:'developer',
+      secretKey:'developer@ASDL-APS',
+      bucket:'dev',
+    })
+
+    setConfig({
+      endPoint:'file.uat.alsi.cn',
+      accessKey:'developer',
+      secretKey:'developer@ASDL-APS',
+      bucket:'uat',
+    })
+
+    // setConfig({
+    //   endPoint:'file.sit.alsi.cn',
+    //   accessKey:'minio',
+    //   // secretKey:'5mrE2KHRDzm6DMQL',
+    //   secretKey:'37BgWp!0$byVbMl&',
+    //   bucket:'test',
+    // })
   }
 };

@@ -1,3 +1,4 @@
-export { default as Hello } from './hello.vue';
-export { default as World } from './world.jsx';
-
+export { default } from './components/index.vue';
+export { setConfig } from './config';
+export { default as presignedGetObject } from './services/presigned-get-object.ts';
+export { type UploadState } from './types.ts';

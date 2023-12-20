@@ -4,13 +4,15 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import cssInjectedByJsPlugin from 'vite-plugin-css-injected-by-js';
 import * as path from 'path';
 import pkg from './package.json';
+import nodePolyfills from 'vite-plugin-node-stdlib-browser';
 
 // https://vitejs.dev/config/
 export default defineConfig({
   plugins: [
     vue(), 
     vueJsx(),
-    cssInjectedByJsPlugin()
+    cssInjectedByJsPlugin(),
+    nodePolyfills()
   ],
   resolve: { alias: { '@': path.resolve(__dirname, './src') } },
   esbuild: { drop: ['console', 'debugger'] },
@@ -28,7 +30,8 @@ export default defineConfig({
         'uuid',
         'moment',
         'rxjs',
-        '@vueuse/core'
+        '@vueuse/core',
+        'element-plus'
       ],
       output: {
         // 在 UMD 构建模式下为这些外部化的依赖提供一个全局变量
@@ -38,7 +41,8 @@ export default defineConfig({
           lodash: '_',
           'moment': 'moment',
           'rxjs': 'rxjs',
-          '@vueuse/core': '@vueuse/core'
+          '@vueuse/core': '@vueuse/core',
+          'element-plus': 'ElementUI'
         },
         exports: 'named'
       }
