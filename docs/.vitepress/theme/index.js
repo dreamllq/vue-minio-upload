@@ -6,7 +6,6 @@ import './custom.scss';
 import NotFound from './not-found.vue'
 import DefaultTheme from 'vitepress/theme'
 import Demo from '../../global/demo/demo.vue'
-import { setConfig } from 'lc-vue-minio-upload'
 
 export default {
   ...DefaultTheme,
@@ -18,12 +17,5 @@ export default {
       app.component(key, component)
     }
     app.component('Demo', Demo)
-
-    setConfig({
-      endPoint:'xxx',
-      accessKey:'xxx',
-      secretKey:'xxx',
-      bucket:'xxx',
-    })
   }
 };

@@ -27,9 +27,11 @@
           :content='error.message'
           placement='top'
           effect='light'>
-          <i class='el-icon-warning-outline' />
+          <el-icon><warning /></el-icon>
         </el-tooltip>
-        <i class='el-icon-circle-close' @click='onRemove' />
+        <el-icon class='el-icon-circle-close' @click='onRemove'>
+          <circle-close />
+        </el-icon>
       </div>
     </div>
   </div>
@@ -38,6 +40,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import download from '@/utils/download';
+import { Warning, CircleClose } from '@element-plus/icons-vue';
 
 const props = defineProps({
   name: {

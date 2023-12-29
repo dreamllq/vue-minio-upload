@@ -1,58 +1,32 @@
-import { Client } from 'minio';
 import { ref, computed } from 'vue';
-import { getConfig } from '../config';
-import { isFunction, isString } from 'lodash';
-import { v4 as uuidV4 } from 'uuid';
 import { ct } from '@/locales';
+import { UploadService } from '@/types';
 
-let _mc: Client;
 
-const mc = new Proxy({}, {
-  get: (_, key) => {
-    if (!_mc) {
-      _mc = new Client({
-        endPoint: getConfig().endPoint,
-        accessKey: getConfig().accessKey,
-        secretKey: getConfig().secretKey
-      });
-    }
 
-    return _mc[key];
-  }
-}) as Client;
+export const useMinioUpload = (service:UploadService, { file, uploadType }) => {
 
-export const useMinioUpload = ({ file, dir, filename }) => {
-  let path: string;
-  if (isFunction(dir)) {
-    path = dir(file);
-  } else if (isString(dir)) {
-    path = dir;
-  } else {
-    path = 'temp';
-  }
-
-  let fn: string;
-  if (isFunction(filename)) {
-    fn = filename(file);
-  } else {
-    const uuid = uuidV4();
-    fn = file.name.replace(/^.+?(\..+?)$/, `${uuid}$1`);
-  }
-
-  const bucketName = getConfig().bucket;
   const progress = ref(0);
-  const progressString = computed(() => `${Math.floor(progress.value * 100)}%`);
   const downloadUrl = ref('');
   const complete = ref(false);
   const success = ref(false);
   const error = ref<any>(null);
-  const objectName = `${path}/${fn}`;
   const http = new XMLHttpRequest();
   let _abort = false;
   let _sended = false;
 
   const upload = async () => {
-    const filePutUrl = await mc.presignedPutObject(bucketName, objectName, 24 * 60 * 60);
+    let uploadUrl = '';
+    let downloadKey = 'POST';
+    if (uploadType === 'PUT') {
+      const { url, key } = await service.generatePutUploadUrl({ file: file });
+      uploadUrl = url;
+      downloadKey = key;
+    } else if (uploadType === 'POST') {
+      const { url, key } = await service.generatePostUploadUrl({ file: file });
+      uploadUrl = url;
+      downloadKey = key;
+    }
 
     if (_abort) return;
     http.upload.addEventListener('progress', (e) => { 
@@ -62,7 +36,11 @@ export const useMinioUpload = ({ file, dir, filename }) => {
     http.onload = async () => {
       if (http.status === 200 && http.status < 300 || http.status === 304) {
         try {
-          downloadUrl.value = await mc.presignedGetObject(bucketName, objectName, 24 * 60 * 60);
+          service.success && await service.success({
+            key: downloadKey,
+            http 
+          });
+          downloadUrl.value = await service.generateDownloadUrl({ key: downloadKey });
           success.value = true;
           complete.value = true;
         } catch (e: any) {
@@ -81,7 +59,7 @@ export const useMinioUpload = ({ file, dir, filename }) => {
     };
     
 
-    http.open('PUT', filePutUrl, true);
+    http.open(uploadType, uploadUrl, true);
     http.send(file);
     _sended = true;
   };
@@ -101,13 +79,7 @@ export const useMinioUpload = ({ file, dir, filename }) => {
   });
   return {
     abort,
-    fileName: fn,
-    realFileName: file.name,
-    dir: path,
-    objectName,
-    bucket: bucketName,
     progress,
-    progressString,
     downloadUrl,
     success,
     error,

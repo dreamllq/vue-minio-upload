@@ -33,15 +33,18 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref, watch } from 'vue';
+import { PropType, computed, ref, watch } from 'vue';
 import { ElMessage, genFileId, UploadFile, type UploadInstance, type UploadProps, type UploadRawFile } from 'element-plus';
 import { useMinioUpload } from './use-minio-upload';
 import CFileList from './file-list.vue';
 import FileItem from './file-item.vue';
-import { UploadState } from '@/types';
+import { UploadService, UploadState } from '@/types';
 import sizeLocale from '@/utils/size';
 import { ct } from '@/locales';
+import { useProvideLocal } from '@/locales';
+import { DefaultUploadService } from '@/services/default-upload-service';
 
+useProvideLocal();
 const props = defineProps({
   exceedClear: {
     type: Boolean,
@@ -55,14 +58,6 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
-  dir: {
-    type: [String, Function],
-    default: 'temp'
-  },
-  filename: {
-    type: Function,
-    default: undefined
-  },
   accept: {
     type: String,
     default: undefined
@@ -70,8 +65,26 @@ const props = defineProps({
   maxSize: {
     type: Number,
     default: 0
+  },
+  service: {
+    type: Object as PropType<UploadService>,
+    default: undefined
+  },
+  uploadType: {
+    type: String as PropType<'PUT'|'POST'>,
+    default: 'POST'
+  },
+  url: {
+    type: String,
+    default: ''
   }
 });
+
+let uploadService = props.service!;
+
+if (uploadService === undefined) {
+  uploadService = new DefaultUploadService({ url: props.url });
+}
 
 const emit = defineEmits(['success', 'change']);
 
@@ -135,10 +148,9 @@ const handleChange: UploadProps['onChange'] = (file) => {
       complete: ref(true)
     };
   } else {
-    fileMap.value[file.raw!.uid] = useMinioUpload({
+    fileMap.value[file.raw!.uid] = useMinioUpload(uploadService!, {
       file: file.raw,
-      dir: props.dir,
-      filename: props.filename
+      uploadType: props.uploadType 
     });
   }
 };

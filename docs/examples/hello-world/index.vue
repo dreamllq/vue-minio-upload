@@ -1,6 +1,11 @@
 <template>
   <div>
-    <minio-upload ref='uploadRef' :max-size='10*1024*1024' accept='.xlsx' />
+    <minio-upload
+      ref='uploadRef'
+      :max-size='10*1024*1024'
+      accept='.xlsx'
+      upload-type='PUT'
+      :service='uploadService' />
   </div>
   <div>
     {{ status }}
@@ -17,12 +22,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue';
-import MinioUpload, { presignedGetObject } from 'lc-vue-minio-upload';
+import MinioUpload from 'lc-vue-minio-upload';
+import { MinioUploadService } from './upload-service';
 
 const uploadRef = ref();
 
 const status = ref({});
 const fileMap = ref([]);
+const uploadService = new MinioUploadService({});
 
 onMounted(() => {
   const _status = uploadRef.value.getStatus();
@@ -36,8 +43,8 @@ onMounted(() => {
 });
 
 const onPresignedGetObject = async () => {
-  const res = await presignedGetObject('aaa/bbb');
-  console.log(res);
+  // const res = await presignedGetObject('aaa/bbb');
+  // console.log(res);
   
 };
 
